@@ -3,14 +3,14 @@
 /**
  * @file BS_thread_pool.hpp
  * @author Barak Shoshany (baraksh@gmail.com) (http://baraksh.com)
- * @version 3.5.0
+ * @version 3.5.1
  * @date 2023-05-25
  * @copyright Copyright (c) 2023 Barak Shoshany. Licensed under the MIT license. If you found this project useful, please consider starring it on GitHub! If you use this library in software of any kind, please provide a link to the GitHub repository https://github.com/bshoshany/thread-pool in the source code and documentation. If you use this library in published research, please cite it as follows: Barak Shoshany, "A C++17 Thread Pool for High-Performance Scientific Computing", doi:10.5281/zenodo.4742687, arXiv:2105.00613 (May 2021)
  *
  * @brief BS::thread_pool: a fast, lightweight, and easy-to-use C++17 thread pool library. This header file contains the entire library, including the main BS::thread_pool class and the helper classes BS::multi_future, BS::blocks, BS:synced_stream, and BS::timer.
  */
 
-#define BS_THREAD_POOL_VERSION "v3.5.0 (2023-05-25)"
+#define BS_THREAD_POOL_VERSION "v3.5.1 (2023-10-26)"
 
 #include <chrono>             // std::chrono
 #include <condition_variable> // std::condition_variable
@@ -265,6 +265,22 @@ public:
     // =======================
     // Public member functions
     // =======================
+
+    /**
+     * @brief Get the native handle of all threads in the pool.
+     *
+     * @return The vector with threads handle.
+     */
+    [[nodiscard]] std::vector<std::thread::native_handle_type> get_threads_raw_handle() const
+    {
+        std::vector<std::thread::native_handle_type> raw_hndls;
+        for (concurrency_t i = 0; i < thread_count; ++i)
+        {
+            raw_hndls.push_back(threads[i].native_handle());
+        }
+
+        return raw_hndls;
+    }
 
     /**
      * @brief Get the number of tasks currently waiting in the queue to be executed by the threads.
